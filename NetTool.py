@@ -211,11 +211,3 @@ class GatedAttention(nn.Module):
 def bp_mip_loss(x, y):
     x = torch.max(torch.max(x[0], 1).values)
     return torch.mean(torch.pow((x - y), 2))
-
-
-if __name__ == '__main__':
-    torch.manual_seed(1)
-    data = torch.rand(1, 5, 10)
-    label = torch.tensor([1])
-    net = BPNet(10, 10)
-    net.calculate_classification_error(data, label)
