@@ -36,10 +36,13 @@ class MIL:
 
         self.bag_size = np.zeros(self.num_bag, dtype=int)
         self.bag_lab = np.zeros_like(self.bag_size, dtype=int)
+
         self.bag_idx = np.arange(self.num_bag)
         for i in range(self.num_bag):
             self.bag_size[i] = len(self.bag_space[i][0])
             self.bag_lab[i] = self.bag_space[i][1]
+            # Map bag label to class \in [0, 1, 2, ...]
+        self.__bag_lab_map()
 
         self.num_ins = sum(self.bag_size)
         self.num_att = len(self.bag_space[0, 0][0]) - 1
@@ -67,6 +70,17 @@ class MIL:
         if not os.path.exists(self.save_home):
             os.makedirs(self.save_home)
 
+    def __bag_lab_map(self):
+        """
+        Map the label of the bag to class \in [0, 1, 2, ...]
+        """
+        lab_list = list(set(self.bag_lab))
+        lab_dict = {}
+        for i, lab in enumerate(lab_list):
+            lab_dict[lab] = i
+        for i in range(self.num_bag):
+            self.bag_lab[i] = lab_dict[self.bag_lab[i]]
+
     def get_data_info(self):
         """
         Print the data set information.
@@ -77,7 +91,7 @@ class MIL:
               "Class space:", self.class_space, "\n"
               "Number classes:", self.num_class, "\n"
               "Bag size:", self.bag_size[:temp_idx], "...\n"
-              "Bag label", self.bag_lab, "...\n"
+              "Bag label", self.bag_lab[:temp_idx], "...\n"
               "Maximum bag's size:", np.max(self.bag_size), "\n"
               "Minimum bag's size:", np.min(self.bag_size), "\n"
               "Zero ratio:", self.zero_ratio, "\n"
@@ -107,7 +121,5 @@ class MIL:
 
 
 if __name__ == '__main__':
-    from MnistLoadTool import MnistLoader
-    mnist = MnistLoader(seed=1, mnist_path="D:/Data/OneDrive/文档/Code/MIL1/Data")
-    mil = MIL("mnist.none", bag_space=mnist.bag_space)
+    mil = MIL("D:/Data/OneDrive/文档/Code/MIL1/Data/ELDM_COREL_GHIM/GHIM/Beach_Chicken.mat")
     mil.get_data_info()
