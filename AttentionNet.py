@@ -62,7 +62,8 @@ class AttentionNet(MIL):
     def main(self):
         tr_idxes, te_idxes = get_k_cross_validation_index(self.num_bag)
         pre_label_list, label_list = [], []
-        for tr_idx, te_idx in zip(tr_idxes, te_idxes):
+        for i, (tr_idx, te_idx) in enumerate(zip(tr_idxes, te_idxes)):
+            print("The %d-th CV" % i)
             tr_loader = BagLoader(self.bag_space, self.bag_lab, tr_idx)
             te_loader = BagLoader(self.bag_space, self.bag_lab, te_idx)
             if self.net_type == "a":
@@ -82,8 +83,8 @@ class AttentionNet(MIL):
                     self.opt.step()
                     tr_error += error
                     batch_count += 1
-                # print("Epoch %d, loss %.4f, error %.4f" % (epoch + 1, tr_loss / batch_count,
-                #                                                tr_error / batch_count))
+                print("Epoch %d, loss %.4f, error %.4f" % (epoch + 1, tr_loss / batch_count,
+                    tr_error / batch_count))
 
             for data, label in te_loader:
                 _, pre_lab = self.net.calculate_classification_error(data.float(), label)
@@ -97,11 +98,11 @@ if __name__ == '__main__':
     import time
 
     s_t = time.time()
-    po_label = 2
-    file_name = "D:/Data/OneDrive/文档/Code/MIL1/Data/Text/alt_atheism.mat"
+    # po_label = 2
+    file_name = "D:/Data/OneDrive/文档/Code/MIL1/Data/Image/elephant+.mat"
     # from MnistLoadTool import MnistLoader
     # bag_space = MnistLoader(seed=1, po_label=po_label, data_type="mnist", data_path=file_name).bag_space
-    an = AttentionNet(file_name, epoch=5, net_type="a")
+    an = AttentionNet(file_name, epoch=100, net_type="a")
     print(file_name.split("/")[-1].split(".")[0], "a")
 
     loops = 5
